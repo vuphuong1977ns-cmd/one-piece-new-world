@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONE PIECE: NEW WORLD</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #102b42;
+    color: white;
+    text-align: center;
+}
+
+header {
+    padding: 12px;
+    background: #071827;
+}
+
+h1 {
+    color: #ffcf45;
+    font-size: 24px;
+}
+
+#stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background: #173b55;
+}
+
+#game {
+    position: relative;
+    height: 55vh;
+    min-height: 300px;
+    overflow: hidden;
+    background: #38a9c8;
+    border: 4px solid #e5d6a0;
+}
+
+#island {
+    position: absolute;
+    width: 75%;
+    height: 65%;
+    left: 12.5%;
+    bottom: -10%;
+    border-radius: 50%;
+    background: #d8c27b;
+    border: 12px solid #4c9b52;
+}
+
+#player, #enemy {
+    position: absolute;
+    z-index: 2;
+    font-size: 38px;
+    transform: translate(-50%, -50%);
+}
+
+#player {
+    left: 35%;
+    top: 55%;
+}
+
+#enemy {
+    left: 70%;
+    top: 55%;
+}
+
+#message {
+    min-height: 42px;
+    padding: 10px;
+    background: #071827;
+}
+
+#controls {
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(70px, 100px));
+    justify-content: center;
+    gap: 8px;
+}
+
+button {
+    padding: 13px 8px;
+    border: 0;
+    border-radius: 10px;
+    background: #ffcf45;
+    color: #172331;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+button:active {
+    transform: scale(0.96);
+}
+
+#quest {
+    padding: 12px;
+    background: #173b55;
+}
+
+#fruitSkills {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🏴‍☠️ ONE PIECE: NEW WORLD</h1>
+    <div>Hành trình trở thành Vua Hải Tặc!</div>
+</header>
+
+<div id="stats">
+    <span id="level">Cấp: 1</span>
+    <span id="hp">HP: 100/100</span>
+    <span id="exp">EXP: 0/50</span>
+    <span id="beli">Beli: 0</span>
+</div>
+
+<div id="game">
+    <div id="island"></div>
+    <div id="player">🏴‍☠️</div>
+    <div id="enemy">👊</div>
+</div>
+
+<div id="message">Chào mừng đến với Đảo Khởi Đầu!</div>
+
+<div id="quest">
+    <h3>📜 Nhiệm vụ</h3>
+    <p id="questText">Đánh bại 3 tên cướp biển!</p>
+    <p id="kills">Đã đánh bại: 0/3</p>
+</div>
+
+<div id="controls">
+    <span></span>
+    <button onclick="move(0,-5)">⬆️</button>
+    <span></span>
+
+    <button onclick="move(-5,0)">⬅️</button>
+    <button onclick="attack()">👊 Đánh</button>
+    <button onclick="move(5,0)">➡️</button>
+
+    <span></span>
+    <button onclick="move(0,5)">⬇️</button>
+    <span></span>
+</div>
+
+<div id="fruitSkills">
+    <button onclick="skill(1)">🍈 Chiêu Z</button>
+    <button onclick="skill(2)">🍈 Chiêu X</button>
+    <button onclick="skill(3)">🍈 Chiêu C</button>
+</div>
+
+<script>
+let level = 1;
+let hp = 100;
+let exp = 0;
+let beli = 0;
+let kills = 0;
+let enemyHp = 50;
+let playerX = 35;
+let playerY = 55;
+let enemyX = 70;
+let enemyY = 55;
+
+const player = document.getElementById("player");
+const enemy = document.getElementById("enemy");
+const message = document.getElementById("message");
+
+function update() {
+    document.getElementById("level").textContent =
+        "Cấp: " + level;
+
+    document.getElementById("hp").textContent =
+        "HP: " + hp + "/100";
+
+    document.getElementById("exp").textContent =
+        "EXP: " + exp + "/" + (level * 50);
+
+    document.getElementById("beli").textContent =
+        "Beli: " + beli;
+
+    document.getElementById("kills").textContent =
+        "Đã đánh bại: " + kills + "/3";
+
+    player.style.left = playerX + "%";
+    player.style.top = playerY + "%";
+
+    enemy.style.left = enemyX + "%";
+    enemy.style.top = enemyY + "%";
+
+    enemy.style.display = enemyHp > 0 ? "block" : "none";
+}
+
+function move(dx, dy) {
+    playerX = Math.max(5, Math.min(95, playerX + dx));
+    playerY = Math.max(5, Math.min(90, playerY + dy));
+    update();
+}
+
+function attack() {
+    if (enemyHp <= 0) {
+        message.textContent = "Kẻ địch đã bị đánh bại!";
+        return;
+    }
+
+    const distance = Math.hypot(
+        playerX - enemyX,
+        playerY - enemyY
+    );
+
+    if (distance > 18) {
+        message.textContent = "Đến gần kẻ địch hơn để tấn công!";
+        return;
+    }
+
+    enemyHp -= 25;
+
+    if (enemyHp <= 0) {
+        kills++;
+        exp += 25;
+        beli += 100;
+
+        enemy.textContent = "💀";
+        message.textContent = "Chiến thắng! Nhận 25 EXP và 100 Beli.";
+
+        if (exp >= level * 50) {
+            exp -= level * 50;
+            level++;
+            hp = 100;
+            message.textContent += " LÊN CẤP " + level + "!";
+        }
+
+        if (kills >= 3) {
+            message.textContent += " Hoàn thành nhiệm vụ!";
+            beli += 500;
+            exp += 50;
+            document.getElementById("questText").textContent =
+                "Nhiệm vụ hoàn thành! Phần thưởng: 500 Beli.";
+        }
+
+        setTimeout(() => {
+            enemyHp = 50;
+            enemy.textContent = "👊";
+            enemyX = 55 + Math.random() * 30;
+            enemyY = 20 + Math.random() * 60;
+            update();
+        }, 800);
+    } else {
+        message.textContent = "Bạn gây 25 sát thương!";
+    }
+
+    update();
+}
+
+function skill(number) {
+    const distance = Math.hypot(
+        playerX - enemyX,
+        playerY - enemyY
+    );
+
+    if (distance > 30) {
+        message.textContent = "Kẻ địch ở quá xa!";
+        return;
+    }
+
+    const damage = number * 20;
+    enemyHp -= damage;
+
+    message.textContent =
+        "💥 Sử dụng chiêu " + number +
+        ", gây " + damage + " sát thương!";
+
+    if (enemyHp <= 0) {
+        enemyHp = 1;
+        attack();
+    }
+
+    update();
+}
+
+update();
+</script>
+
+</body>
+      </html>
